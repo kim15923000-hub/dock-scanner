@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>도크 스캐너</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body { margin: 0; padding: 0; background-color: #111827; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    #reader { width: 100%; max-width: 500px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid #374151; background: #000; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { margin: 0; font-size: 1.5rem; color: #4ADE80; font-weight: 800; }
+    .header p { margin: 8px 0 0; color: #9CA3AF; font-size: 0.95rem; }
+    #loading { display: none; margin-top: 24px; font-weight: bold; color: #4ADE80; font-size: 1.2rem; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(74,222,128,.3); border-radius: 50%; border-top-color: #4ADE80; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📦 실시간 도크 스캐너</h1>
+    <p>기둥의 QR코드를 사각형 안에 비춰주세요</p>
+  </div>
+
+  <div id="reader"></div>
+  
+  <div id="loading">
+    <div class="spinner"></div>도크 이동 중...🚀
+  </div>
+
+  <script>
+    // 🌟 [핵심] 우리 회사의 구글 앱스 스크립트 주소를 여기에 넣습니다!
+    const GAS_URL = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbw4qmRwUCJtBJL83GxHC25VYG8Ud4jgb4IPo9-jWdBJ1dbIhuhajW8xWqxo6tiY_DY7Zw/exec";
+
+    const html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 15, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+
+    // 화면 켜지자마자 후면 카메라 강제 실행!
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+    .catch(err => {
+        alert("카메라 권한을 반드시 허용해주세요!");
+    });
+
+    // 🌟 큐알을 읽는 순간 작동하는 마법!
+    function onScanSuccess(decodedText) {
+        // 1. 읽자마자 카메라를 끕니다. (중복 인식 방지)
+        html5QrCode.stop().then(() => {
+            // 2. 화면에 '이동 중' 로딩 애니메이션 띄우기
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            // 3. 큐알 내용(예: A1)을 주소 뒤에 ?dock=A1 형태로 붙여서 우리 회사 대시보드로 강제 이동!
+            const targetUrl = GAS_URL + "?dock=" + encodeURIComponent(decodedText.trim());
+            window.location.replace(targetUrl); 
+        });
+    }
+  </script>
+</body>
+</html>
