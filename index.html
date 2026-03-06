@@ -43,17 +43,16 @@
 
     // 🌟 큐알을 읽는 순간 작동하는 마법!
     function onScanSuccess(decodedText) {
-        // 1. 읽자마자 카메라를 끕니다. (중복 인식 방지)
         html5QrCode.stop().then(() => {
-            // 2. 화면에 '이동 중' 로딩 애니메이션 띄우기
             document.getElementById('reader').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
             
-            // 3. 큐알 내용(예: A1)을 주소 뒤에 ?dock=A1 형태로 붙여서 우리 회사 대시보드로 강제 이동!
+            // 🌟 이름(&user=)은 싹 빼고 오직 도크 번호만 들고 구글로 복귀!
             const targetUrl = GAS_URL + "?dock=" + encodeURIComponent(decodedText.trim());
             window.location.replace(targetUrl); 
         });
     }
   </script>
 </body>
+
 </html>
